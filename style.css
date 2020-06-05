@@ -1,0 +1,32 @@
+html {
+	font-size: 62.5%;
+}
+
+body {
+	margin: 0;
+	box-sizing: border-box;
+}
+
+main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#storyZone {
+	font-size: 2.5rem;
+	width: 60%;
+	border: 2px solid black;
+	padding: 1rem;
+	margin: 2rem 0;
+}
+
+#actionInput {
+	padding: 1.5rem;
+	width: 30rem;
+}
+
+#actionBtn {
+	height: 5rem;
+	width: 8rem;
+}
