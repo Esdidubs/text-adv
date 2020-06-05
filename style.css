@@ -21,6 +21,12 @@ main {
 	margin: 2rem 0;
 }
 
+#inputZone {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
 #actionInput {
 	padding: 1.5rem;
 	width: 30rem;
@@ -29,4 +35,5 @@ main {
 #actionBtn {
 	height: 5rem;
 	width: 8rem;
+	border-radius: none;
 }
