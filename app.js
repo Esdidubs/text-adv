@@ -12,6 +12,12 @@ let currentMessage =
 	'You are standing in a room facing north. A TV is in front of you. You have a strong urge to escape the room. What do you do?';
 let hasBox = false;
 let displayText = '';
+let achievementCount = 0;
+let achievementMonkeys = false;
+let achievementMessupBed = false;
+let achievementFixBed = false;
+let achievementUnplug = false;
+let achievementKicks = false;
 
 let northWall = `You are facing north. A TV is in front of you and it is ${tvPower}. ${tvMessage}`;
 let westWall = `You are facing west. A poster hanging on the wall says "Don\'t look under the bed!!"`;
@@ -165,6 +171,12 @@ function interpretString(userChoice) {
 	) {
 		setPrior();
 		displayText = 'You look down at the floor. Nice shoes!';
+		if (achievementKicks == false) {
+			achievementKicks = true;
+			achievementCount++;
+			$('#achievement-count').text(achievementCount);
+			$('#achievement-kicks').removeClass('hidden');
+		}
 		setCurrent();
 	} else if (
 		/*=====================
@@ -286,6 +298,29 @@ function interpretString(userChoice) {
 		}
 	} else if (
 		/*=====================
+            User looks behind tv
+        ======================*/
+
+		userChoice.includes('behind') &&
+		(userChoice.includes('tv') || userChoice.includes('television'))
+	) {
+		if (direction == 'north') {
+			if (plug == 'unplugged') {
+				setPrior();
+				displayText = `You see a plug behind the tv that's not in an outlet.`;
+				setCurrent();
+			} else {
+				setPrior();
+				displayText = `You see a plug already in an outlet.`;
+				setCurrent();
+			}
+		} else {
+			setPrior();
+			displayText = `There's no tv in view.`;
+			setCurrent();
+		}
+	} else if (
+		/*=====================
             User plugs in TV
         ======================*/
 		userChoice.includes('plug') &&
@@ -318,7 +353,13 @@ function interpretString(userChoice) {
 				plug = 'unplugged';
 				tvPower = 'off';
 				setPrior();
-				displayText = `You unplugged the tv, and the tv turns off.`;
+				displayText = `You unplugged the tv.`;
+				if (achievementUnplug == false) {
+					achievementUnplug = true;
+					achievementCount++;
+					$('#achievement-count').text(achievementCount);
+					$('#achievement-unplug').removeClass('hidden');
+				}
 				setCurrent();
 			} else {
 				setPrior();
@@ -394,6 +435,13 @@ function interpretString(userChoice) {
 			bedMade = 'unmade';
 			setPrior();
 			displayText = `Someone somewhere is crying about the unmade bed.`;
+			if (achievementMessupBed == false) {
+				achievementMessupBed = true;
+				achievementCount++;
+				$('#achievement-count').text(achievementCount);
+				$('#achievement-messup-bed').removeClass('hidden');
+			}
+			eastWall = `You are facing east. A bed that used to be perfectly made is now entirely disheveled. `;
 			setCurrent();
 		} else {
 			setPrior();
@@ -412,6 +460,12 @@ function interpretString(userChoice) {
 			if (bedMade == 'unmade') {
 				setPrior();
 				displayText = `You try to restore it to its former glory but are unsuccessful.`;
+				if (achievementFixBed == false) {
+					achievementFixBed = true;
+					achievementCount++;
+					$('#achievement-count').text(achievementCount);
+					$('#achievement-fix-bed').removeClass('hidden');
+				}
 				setCurrent();
 			} else {
 				setPrior();
@@ -444,6 +498,12 @@ function interpretString(userChoice) {
 			} else {
 				setPrior();
 				displayText = `NO MORE MONKEYS JUMPING ON THE BED!!!`;
+				if (achievementMonkeys == false) {
+					achievementMonkeys = true;
+					achievementCount++;
+					$('#achievement-count').text(achievementCount);
+					$('#achievement-monkeys').removeClass('hidden');
+				}
 				setCurrent();
 			}
 		} else {
@@ -549,6 +609,7 @@ function interpretString(userChoice) {
 		(userChoice.includes('try') ||
 			userChoice.includes('enter') ||
 			userChoice.includes('code') ||
+			userChoice.includes('set') ||
 			userChoice.includes('check')) &&
 		hasBox == true &&
 		/\d/.test(userChoice)

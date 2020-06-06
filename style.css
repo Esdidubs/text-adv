@@ -52,3 +52,21 @@ main {
 		width: 90%;
 	}
 }
+
+.hidden {
+	display: none;
+}
+
+#achievements {
+	text-align: center;
+}
+
+#achievement-title {
+	font-size: 3rem;
+}
+
+.achievement {
+	font-size: 2.5rem;
+	border: 2px solid black;
+	padding: 1.5rem 2.5rem;
+}
