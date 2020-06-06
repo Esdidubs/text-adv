@@ -7,6 +7,11 @@ let monkeys = 5;
 let door = 'locked';
 let tvMessage = '';
 let bedMade = 'made';
+let priorMessage = '';
+let currentMessage =
+	'You are standing in a room facing north. A TV is in front of you. You have a strong urge to escape the room. What do you do?';
+let hasBox = false;
+let displayText = '';
 
 let northWall = `You are facing north. A TV is in front of you and it is ${tvPower}. ${tvMessage}`;
 let westWall = `You are facing west. A poster hanging on the wall says "Don\'t look under the bed!!"`;
@@ -28,6 +33,24 @@ function buttons() {
 	});
 }
 
+function setPrior() {
+	priorMessage = currentMessage;
+	$('#priorZone').replaceWith(` 
+            <div id="priorZone">
+                <p>${priorMessage}</p>
+            </div>  
+        `);
+}
+
+function setCurrent() {
+	$('#storyZone').replaceWith(` 
+        <div id="storyZone">
+            <p id="storyText">${displayText}</p>
+        </div>  
+    `);
+	currentMessage = displayText;
+}
+
 function interpretString(userChoice) {
 	if (
 		/*=====================
@@ -42,32 +65,24 @@ function interpretString(userChoice) {
 	) {
 		if (direction === 'north') {
 			direction = 'west';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${westWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = westWall;
+			setCurrent();
 		} else if (direction === 'west') {
 			direction = 'south';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${southWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = southWall;
+			setCurrent();
 		} else if (direction === 'south') {
 			direction = 'east';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${eastWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = eastWall;
+			setCurrent();
 		} else {
 			direction = 'north';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${northWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = northWall;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -81,33 +96,76 @@ function interpretString(userChoice) {
 	) {
 		if (direction === 'north') {
 			direction = 'east';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${eastWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = eastWall;
+			setCurrent();
 		} else if (direction === 'west') {
 			direction = 'north';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${northWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = northWall;
+			setCurrent();
 		} else if (direction === 'south') {
 			direction = 'west';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${westWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = westWall;
+			setCurrent();
 		} else {
 			direction = 'south';
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${southWall}</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = southWall;
+			setCurrent();
 		}
+	} else if (
+		/*=====================
+            User looks behind
+        ======================*/
+		userChoice.includes('turn') &&
+		userChoice.includes('around')
+	) {
+		if (direction === 'north') {
+			direction = 'south';
+			setPrior();
+			displayText = southWall;
+			setCurrent();
+		} else if (direction === 'west') {
+			direction = 'east';
+			setPrior();
+			displayText = eastWall;
+			setCurrent();
+		} else if (direction === 'south') {
+			direction = 'north';
+			setPrior();
+			displayText = northWall;
+			setCurrent();
+		} else {
+			direction = 'west';
+			setPrior();
+			displayText = westWall;
+			setCurrent();
+		}
+	} else if (
+		/*=====================
+            User looks up
+        ======================*/
+		(userChoice.includes('cieling') || userChoice.includes('ceiling') || userChoice.includes('up')) &&
+		userChoice.includes('look')
+	) {
+		setPrior();
+		displayText = "You look up at the ceiling. There's a light, but there's nothing special about it.";
+		setCurrent();
+	} else if (
+		/*=====================
+            User looks down
+        ======================*/
+		(userChoice.includes('floor') ||
+			userChoice.includes('ground') ||
+			userChoice.includes('down') ||
+			userChoice.includes('feet')) &&
+		userChoice.includes('look')
+	) {
+		setPrior();
+		displayText = 'You look down at the floor. Nice shoes!';
+		setCurrent();
 	} else if (
 		/*=====================
             User looks north
@@ -119,11 +177,9 @@ function interpretString(userChoice) {
 		userChoice.includes('north')
 	) {
 		direction = 'north';
-		$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${northWall}</p>
-                </div>  
-            `);
+		setPrior();
+		displayText = northWall;
+		setCurrent();
 	} else if (
 		/*=====================
             User looks west
@@ -135,11 +191,9 @@ function interpretString(userChoice) {
 		userChoice.includes('west')
 	) {
 		direction = 'west';
-		$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${westWall}</p>
-                </div>  
-            `);
+		setPrior();
+		displayText = westWall;
+		setCurrent();
 	} else if (
 		/*=====================
             User looks south
@@ -151,11 +205,9 @@ function interpretString(userChoice) {
 		userChoice.includes('south')
 	) {
 		direction = 'south';
-		$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${southWall}</p>
-                </div>  
-            `);
+		setPrior();
+		displayText = southWall;
+		setCurrent();
 	} else if (
 		/*=====================
             User looks east
@@ -167,11 +219,9 @@ function interpretString(userChoice) {
 		userChoice.includes('east')
 	) {
 		direction = 'east';
-		$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>${eastWall}</p>
-                </div>  
-            `);
+		setPrior();
+		displayText = eastWall;
+		setCurrent();
 	} else if (
 		/*=====================
             User turns on tv
@@ -185,39 +235,29 @@ function interpretString(userChoice) {
 				if (hasRemote) {
 					if (plug == 'plugged') {
 						tvPower = 'on';
-						tvMessage = `The tv is on. An alert flashes on the screen saying "It\'s behind the poster!"`;
-						$('#storyZone').replaceWith(` 
-                                <div id="storyZone">
-                                    <p>${tvMessage}</p>
-                                </div>  
-                            `);
+						tvMessage = `The tv is on. An alert flashes on the screen saying "It\'s behind the poster! Use the code 371"`;
+						setPrior();
+						displayText = tvMessage;
+						setCurrent();
 					} else {
-						$('#storyZone').replaceWith(` 
-                                <div id="storyZone">
-                                    <p>It doesn't work. Maybe there's no power?</p>
-                                </div>  
-                            `);
+						setPrior();
+						displayText = "It doesn't work. Maybe there's no power?";
+						setCurrent();
 					}
 				} else {
-					$('#storyZone').replaceWith(` 
-                            <div id="storyZone">
-                                <p>You need a device to turn it on</p>
-                            </div>  
-                        `);
+					setPrior();
+					displayText = 'You need a device to turn it on.';
+					setCurrent();
 				}
 			} else {
-				$('#storyZone').replaceWith(` 
-                        <div id="storyZone">
-                            <p>The tv is already on</p>
-                        </div>  
-                    `);
+				setPrior();
+				displayText = 'The tv is already on.';
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no tv in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no tv in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -230,24 +270,18 @@ function interpretString(userChoice) {
 		if (direction == 'north') {
 			if (tvPower == 'on') {
 				tvPower = 'off';
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>The tv is off</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `The tv is off.`;
+				setCurrent();
 			} else {
-				$('#storyZone').replaceWith(` 
-                        <div id="storyZone">
-                            <p>The tv is already off</p>
-                        </div>  
-                    `);
+				setPrior();
+				displayText = `The tv is already off.`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no tv in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no tv in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -259,24 +293,18 @@ function interpretString(userChoice) {
 		if (direction == 'north') {
 			if (plug == 'unplugged') {
 				plug = 'plugged';
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You plug in the plug.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `You plug in the plug.`;
+				setCurrent();
 			} else {
-				$('#storyZone').replaceWith(` 
-                        <div id="storyZone">
-                            <p>The plug is already plugged in.</p>
-                        </div>  
-                    `);
+				setPrior();
+				displayText = `The plug is already plugged in.`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no plug in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no plug in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -288,24 +316,18 @@ function interpretString(userChoice) {
 			if (plug == 'plugged') {
 				plug = 'unplugged';
 				tvPower = 'off';
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You unplugged the tv, and the tv turns off.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `You unplugged the tv, and the tv turns off.`;
+				setCurrent();
 			} else {
-				$('#storyZone').replaceWith(` 
-                        <div id="storyZone">
-                            <p>The plug is already unplugged.</p>
-                        </div>  
-                    `);
+				setPrior();
+				displayText = `The plug is already unplugged.`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no plug in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no plug in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -316,17 +338,13 @@ function interpretString(userChoice) {
 		userChoice.includes('pillow')
 	) {
 		if (direction == 'east') {
-			$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You look under the pillow and find nothing. Were you hoping for toothfairy money?</p>
-                    </div>  
-                `);
+			setPrior();
+			displayText = `You look under the pillow and find nothing. Were you hoping for toothfairy money?`;
+			setCurrent();
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no pillow in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no pillow in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -336,17 +354,13 @@ function interpretString(userChoice) {
 		userChoice.includes('pillow')
 	) {
 		if (direction == 'east') {
-			$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>The pillow looks plush. Maybe it's goose-feathered.</p>
-                    </div>  
-                `);
+			setPrior();
+			displayText = `The pillow looks plush. Maybe it's goose-feathered.`;
+			setCurrent();
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no pillow in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no pillow in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -356,17 +370,13 @@ function interpretString(userChoice) {
 		userChoice.includes('look')
 	) {
 		if (direction == 'east') {
-			$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>Someone took a lot of time making this bed.</p>
-                    </div>  
-                `);
+			setPrior();
+			displayText = `Someone took a lot of time making this bed.`;
+			setCurrent();
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no bed in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no bed in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -378,17 +388,13 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'east') {
 			bedMade = 'unmade';
-			$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>Someone somewhere is crying about the unmade bed.</p>
-                    </div>  
-                `);
+			setPrior();
+			displayText = `Someone somewhere is crying about the unmade bed.`;
+			setCurrent();
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no bed in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no bed in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -400,24 +406,18 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'east') {
 			if (bedMade == 'unmade') {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You try to restore it to its former glory but are unsuccessful.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `You try to restore it to its former glory but are unsuccessful.`;
+				setCurrent();
 			} else {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>The bed is already made, and it's perfect. Please don't mess with it.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `The bed is already made, and it's perfect. Please don't mess with it.`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no bed in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no bed in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -429,29 +429,23 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'east') {
 			if (monkeys > 0) {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>${monkeys} little monkeys jumping on the bed<br>
-                        1 fell off and bumped his head<br>
-                        Mama called the doctor,<br>
-                        And the doctor said<br>
-                        No more monkeys jumping on the bed</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `${monkeys} little monkeys jumping on the bed<br>
+                1 fell off and bumped his head<br>
+                Mama called the doctor,<br>
+                And the doctor said<br>
+                No more monkeys jumping on the bed`;
+				setCurrent();
 				monkeys--;
 			} else {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>NO MORE MONKEYS JUMPING ON THE BED!!!</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `NO MORE MONKEYS JUMPING ON THE BED!!!`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no bed in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no bed in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -462,17 +456,13 @@ function interpretString(userChoice) {
 		userChoice.includes('sleep')
 	) {
 		if (direction == 'east') {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>No time to relax!</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `No time to relax!`;
+			setCurrent();
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no bed in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no bed in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -484,25 +474,19 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'east') {
 			if (hasRemote == true) {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>There's nothing else under the bed.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `There's nothing else under the bed.`;
+				setCurrent();
 			} else {
 				hasRemote = true;
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You find a remote and pick it up!</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `You find a remote and pick it up!`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no bed in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no bed in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -518,55 +502,86 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'west') {
 			if (hasKey == false) {
-				hasKey = true;
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You remove the poster from the wall and find a key behind it!</p>
-                    </div>  
-                `);
+				hasBox = true;
+				westWall = `You are facing west. A poster used to hang on the wall that said "Don\'t look under the bed!!". Now there's a hole in the wall that's empty.`;
+				setPrior();
+				displayText = `You remove the poster from the wall and find a hole behind it! In the whole is a lockbox. You take the lockbox.`;
+				setCurrent();
 			} else {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>No need to further mess with the poster.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `No need to further mess with the poster.`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no poster in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no poster in view.`;
+			setCurrent();
+		}
+	} else if (
+		/*=====================
+            User looks at lockbox
+        ======================*/
+
+		(userChoice.includes('look') ||
+			userChoice.includes('inspect') ||
+			userChoice.includes('view') ||
+			userChoice.includes('check')) &&
+		(userChoice.includes('lockbox') || userChoice.includes('box'))
+	) {
+		if (hasBox == true) {
+			setPrior();
+			displayText = `There's a 3-digit combination set to 000.`;
+			setCurrent();
+		} else {
+			setPrior();
+			displayText = `There's no lockbox in view.`;
+			setCurrent();
+		}
+	} else if (
+		/*=====================
+            User tries lockbox combo
+        ======================*/
+
+		(userChoice.includes('try') ||
+			userChoice.includes('enter') ||
+			userChoice.includes('view') ||
+			userChoice.includes('check')) &&
+		hasBox == true &&
+		/\d/.test(userChoice)
+	) {
+		if (userChoice.includes('371')) {
+			hasKey = true;
+			setPrior();
+			displayText = `The box opens up revealing a key. You take the key.`;
+			setCurrent();
+		} else {
+			setPrior();
+			displayText = `That doesn't seem to be the correct combination.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
             User unlocks door 
         ======================*/
 
-		userChoice.includes('unlock') &&
+		(userChoice.includes('unlock') || userChoice.includes('key')) &&
 		userChoice.includes('door')
 	) {
 		if (direction == 'south') {
 			if (hasKey == true) {
 				door = 'unlocked';
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You unlock the door.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `You unlock the door.`;
+				setCurrent();
 			} else {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You need a key to do that.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `You need a key to do that.`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no door in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no door in view.`;
+			setCurrent();
 		}
 	} else if (
 		/*=====================
@@ -578,42 +593,29 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'south') {
 			if (door == 'unlocked') {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>You open the door and escape the room!!! Congrats!</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `You open the door and escape the room!!! Congrats!`;
+				setCurrent();
 				$('#inputZone').replaceWith(` 
                     <form id="inputZone">
                     </form>
                 `);
 			} else {
-				$('#storyZone').replaceWith(` 
-                    <div id="storyZone">
-                        <p>The door is locked.</p>
-                    </div>  
-                `);
+				setPrior();
+				displayText = `The door is locked.`;
+				setCurrent();
 			}
 		} else {
-			$('#storyZone').replaceWith(` 
-                <div id="storyZone">
-                    <p>There's no door in view</p>
-                </div>  
-            `);
+			setPrior();
+			displayText = `There's no door in view.`;
+			setCurrent();
 		}
 	} else {
 		// user inputs something not accounted for
 		$('#storyZone').replaceWith(` 
                 <div id="storyZone">
-                    <p>I don't understand what you want from me.</p>
+                    <p id="storyText">I don't understand what you want from me. Try inputting something else.</p>
                 </div>  
             `);
 	}
 }
-
-/*
-look behind || turn around
-
-
-
-*/
