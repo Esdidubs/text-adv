@@ -383,7 +383,10 @@ function interpretString(userChoice) {
             User unmakes bed 
         ======================*/
 		((userChoice.includes('remove') || userChoice.includes('mess')) &&
-			(userChoice.includes('blankets') || userChoice.includes('blanket') || userChoice.includes('sheets'))) ||
+			(userChoice.includes('blankets') ||
+				userChoice.includes('bed') ||
+				userChoice.includes('blanket') ||
+				userChoice.includes('sheets'))) ||
 		(userChoice.includes('unmake') && userChoice.includes('bed'))
 	) {
 		if (direction == 'east') {
@@ -612,6 +615,7 @@ function interpretString(userChoice) {
 		}
 	} else {
 		// user inputs something not accounted for
+		setPrior();
 		$('#storyZone').replaceWith(` 
                 <div id="storyZone">
                     <p id="storyText">I don't understand what you want from me. Try inputting something else.</p>
