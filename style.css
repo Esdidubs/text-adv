@@ -21,6 +21,11 @@ main {
 	margin: 2rem 0;
 }
 
+#priorZone {
+	width: 60%;
+	text-align: center;
+}
+
 #inputZone {
 	display: flex;
 	flex-wrap: wrap;
@@ -36,4 +41,14 @@ main {
 	height: 5rem;
 	width: 8rem;
 	border-radius: none;
+}
+
+@media (max-width: 768px) {
+	#storyZone {
+		width: 90%;
+	}
+
+	#priorZone {
+		width: 90%;
+	}
 }
