@@ -508,7 +508,7 @@ function interpretString(userChoice) {
 				hasBox = true;
 				westWall = `You are facing west. A poster used to hang on the wall that said "Don\'t look under the bed!!". Now there's a hole in the wall that's empty.`;
 				setPrior();
-				displayText = `You remove the poster from the wall and find a hole behind it! In the whole is a lockbox. You take the lockbox.`;
+				displayText = `You remove the poster from the wall and find a hole behind it! In the hole is a lockbox. You take the lockbox.`;
 				setCurrent();
 			} else {
 				setPrior();
