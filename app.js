@@ -235,7 +235,8 @@ function interpretString(userChoice) {
 				if (hasRemote) {
 					if (plug == 'plugged') {
 						tvPower = 'on';
-						tvMessage = `The tv is on. An alert flashes on the screen saying "It\'s behind the poster! Use the code 371"`;
+						tvMessage = `An alert flashes on the screen saying "It\'s behind the poster! Use the code 371"`;
+						northWall = `You are facing north. A TV is in front of you and it is ${tvPower}. ${tvMessage}`;
 						setPrior();
 						displayText = tvMessage;
 						setCurrent();
@@ -547,7 +548,7 @@ function interpretString(userChoice) {
 
 		(userChoice.includes('try') ||
 			userChoice.includes('enter') ||
-			userChoice.includes('view') ||
+			userChoice.includes('code') ||
 			userChoice.includes('check')) &&
 		hasBox == true &&
 		/\d/.test(userChoice)
@@ -600,6 +601,10 @@ function interpretString(userChoice) {
 				displayText = `You open the door and escape the room!!! Congrats!`;
 				setCurrent();
 				$('#inputZone').replaceWith(` 
+                    <form id="inputZone">
+                    </form>
+                `);
+				$('#priorZone').replaceWith(` 
                     <form id="inputZone">
                     </form>
                 `);
