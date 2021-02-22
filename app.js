@@ -11,7 +11,6 @@ let priorMessage = '';
 let currentMessage =
 	'You are standing in a room facing north. A TV is in front of you. You have a strong urge to escape the room. What do you do?';
 let hasBox = false;
-let displayText = '';
 let achievementCount = 0;
 let achievementMonkeys = false;
 let achievementMessupBed = false;
@@ -24,40 +23,29 @@ let westWall = `You are facing west. A poster hanging on the wall says "Don\'t l
 let eastWall = `You are facing east. A well-made bed is in front of you. Really well-made. Like military precision.`;
 let southWall = `You are facing south. There is a door with a deadbolt.`;
 
-$(function() {
-	buttons();
+// User submits choice of action
+$('main').on('click', '#actionBtn', function() {
+	event.preventDefault();
+	let userChoice = $('#actionInput').val();
+	$('#actionInput').val('');
+	userChoice = userChoice.replace(/[.,\/#!$%\^&\*;@:{}=\-_`~()]/g, '');
+	userChoice = userChoice.toLowerCase().split(' ');
+	interpretString(userChoice);
 });
 
-function buttons() {
-	$('main').on('click', '#actionBtn', function() {
-		event.preventDefault();
-		let userChoice = $('#actionInput').val();
-		$('#actionInput').val('');
-		userChoice = userChoice.replace(/[.,\/#!$%\^&\*;@:{}=\-_`~()]/g, '');
-		userChoice = userChoice.toLowerCase().split(' ');
-		interpretString(userChoice);
-	});
-}
 
 function setPrior() {
 	priorMessage = currentMessage;
-	$('#priorZone').replaceWith(` 
-            <div id="priorZone">
-                <p>${priorMessage}</p>
-            </div>  
-        `);
+	$('#priorZone').html(`<p>${priorMessage}</p>`);
 }
 
-function setCurrent() {
-	$('#storyZone').replaceWith(` 
-        <div id="storyZone">
-            <p id="storyText">${displayText}</p>
-        </div>  
-    `);
+function setCurrent(displayText) {
+	$('#storyText').text(`${displayText}`);
 	currentMessage = displayText;
 }
 
 function interpretString(userChoice) {
+	setPrior();
 	if (
 		/*=====================
             User looks left
@@ -70,25 +58,17 @@ function interpretString(userChoice) {
 		userChoice.includes('left')
 	) {
 		if (direction === 'north') {
-			direction = 'west';
-			setPrior();
-			displayText = westWall;
-			setCurrent();
+			direction = 'west';			
+			setCurrent(westWall);
 		} else if (direction === 'west') {
-			direction = 'south';
-			setPrior();
-			displayText = southWall;
-			setCurrent();
+			direction = 'south';			
+			setCurrent(southWall);
 		} else if (direction === 'south') {
-			direction = 'east';
-			setPrior();
-			displayText = eastWall;
-			setCurrent();
+			direction = 'east';			
+			setCurrent(eastWall);
 		} else {
-			direction = 'north';
-			setPrior();
-			displayText = northWall;
-			setCurrent();
+			direction = 'north';			
+			setCurrent(northWall);
 		}
 	} else if (
 		/*=====================
@@ -101,25 +81,17 @@ function interpretString(userChoice) {
 		userChoice.includes('right')
 	) {
 		if (direction === 'north') {
-			direction = 'east';
-			setPrior();
-			displayText = eastWall;
-			setCurrent();
+			direction = 'east';			
+			setCurrent(eastWall);
 		} else if (direction === 'west') {
-			direction = 'north';
-			setPrior();
-			displayText = northWall;
-			setCurrent();
+			direction = 'north';			
+			setCurrent(northWall);
 		} else if (direction === 'south') {
-			direction = 'west';
-			setPrior();
-			displayText = westWall;
-			setCurrent();
+			direction = 'west';			
+			setCurrent(westWall);
 		} else {
-			direction = 'south';
-			setPrior();
-			displayText = southWall;
-			setCurrent();
+			direction = 'south';			
+			setCurrent(southWall);
 		}
 	} else if (
 		/*=====================
@@ -129,25 +101,17 @@ function interpretString(userChoice) {
 		userChoice.includes('around')
 	) {
 		if (direction === 'north') {
-			direction = 'south';
-			setPrior();
-			displayText = southWall;
-			setCurrent();
+			direction = 'south';			
+			setCurrent(southWall);
 		} else if (direction === 'west') {
-			direction = 'east';
-			setPrior();
-			displayText = eastWall;
-			setCurrent();
+			direction = 'east';			
+			setCurrent(eastWall);
 		} else if (direction === 'south') {
-			direction = 'north';
-			setPrior();
-			displayText = northWall;
-			setCurrent();
+			direction = 'north';			
+			setCurrent(northWall);
 		} else {
-			direction = 'west';
-			setPrior();
-			displayText = westWall;
-			setCurrent();
+			direction = 'west';			
+			setCurrent(westWall);
 		}
 	} else if (
 		/*=====================
@@ -155,10 +119,8 @@ function interpretString(userChoice) {
         ======================*/
 		(userChoice.includes('cieling') || userChoice.includes('ceiling') || userChoice.includes('up')) &&
 		userChoice.includes('look')
-	) {
-		setPrior();
-		displayText = "You look up at the ceiling. There's a light, but there's nothing special about it.";
-		setCurrent();
+	) {		
+		setCurrent("You look up at the ceiling. There's a light, but there's nothing special about it.");
 	} else if (
 		/*=====================
             User looks down
@@ -168,16 +130,14 @@ function interpretString(userChoice) {
 			userChoice.includes('down') ||
 			userChoice.includes('feet')) &&
 		userChoice.includes('look')
-	) {
-		setPrior();
-		displayText = 'You look down at the floor. Nice shoes!';
+	) {		
 		if (achievementKicks == false) {
 			achievementKicks = true;
 			achievementCount++;
 			$('#achievement-count').text(achievementCount);
 			$('#achievement-kicks').removeClass('hidden');
 		}
-		setCurrent();
+		setCurrent('You look down at the floor. Nice shoes!');
 	} else if (
 		/*=====================
             User looks north
@@ -188,10 +148,8 @@ function interpretString(userChoice) {
 			userChoice.includes('face')) &&
 		userChoice.includes('north')
 	) {
-		direction = 'north';
-		setPrior();
-		displayText = northWall;
-		setCurrent();
+		direction = 'north';		
+		setCurrent(northWall);
 	} else if (
 		/*=====================
             User looks west
@@ -202,10 +160,8 @@ function interpretString(userChoice) {
 			userChoice.includes('face')) &&
 		userChoice.includes('west')
 	) {
-		direction = 'west';
-		setPrior();
-		displayText = westWall;
-		setCurrent();
+		direction = 'west';		
+		setCurrent(westWall);
 	} else if (
 		/*=====================
             User looks south
@@ -216,10 +172,8 @@ function interpretString(userChoice) {
 			userChoice.includes('face')) &&
 		userChoice.includes('south')
 	) {
-		direction = 'south';
-		setPrior();
-		displayText = southWall;
-		setCurrent();
+		direction = 'south';		
+		setCurrent(southWall);
 	} else if (
 		/*=====================
             User looks east
@@ -230,10 +184,8 @@ function interpretString(userChoice) {
 			userChoice.includes('face')) &&
 		userChoice.includes('east')
 	) {
-		direction = 'east';
-		setPrior();
-		displayText = eastWall;
-		setCurrent();
+		direction = 'east';		
+		setCurrent(eastWall);
 	} else if (
 		/*=====================
             User turns on tv
@@ -248,29 +200,19 @@ function interpretString(userChoice) {
 					if (plug == 'plugged') {
 						tvPower = 'on';
 						tvMessage = `An alert flashes on the screen saying "It\'s behind the poster! Use the code 371"`;
-						northWall = `You are facing north. A TV is in front of you and it is ${tvPower}. ${tvMessage}`;
-						setPrior();
-						displayText = tvMessage;
-						setCurrent();
-					} else {
-						setPrior();
-						displayText = "It doesn't work. Maybe there's no power?";
-						setCurrent();
+						northWall = `You are facing north. A TV is in front of you and it is ${tvPower}. ${tvMessage}`;						
+						setCurrent(tvMessage);
+					} else {						
+						setCurrent("It doesn't work. Maybe there's no power?");
 					}
-				} else {
-					setPrior();
-					displayText = 'You need a device to turn it on.';
-					setCurrent();
+				} else {					
+					setCurrent('You need a device to turn it on.');
 				}
-			} else {
-				setPrior();
-				displayText = 'The tv is already on.';
-				setCurrent();
+			} else {				
+				setCurrent('The tv is already on.');
 			}
-		} else {
-			setPrior();
-			displayText = `There's no tv in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no tv in view.`);
 		}
 	} else if (
 		/*=====================
@@ -282,42 +224,29 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'north') {
 			if (tvPower == 'on') {
-				tvPower = 'off';
-				setPrior();
-				displayText = `The tv is off.`;
-				setCurrent();
-			} else {
-				setPrior();
-				displayText = `The tv is already off.`;
-				setCurrent();
+				tvPower = 'off';				
+				setCurrent(`The tv is off.`);
+			} else {				
+				setCurrent(`The tv is already off.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no tv in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no tv in view.`);
 		}
 	} else if (
 		/*=====================
             User looks behind tv
         ======================*/
-
 		userChoice.includes('behind') &&
 		(userChoice.includes('tv') || userChoice.includes('television'))
 	) {
 		if (direction == 'north') {
-			if (plug == 'unplugged') {
-				setPrior();
-				displayText = `You see a plug behind the tv that's not in an outlet.`;
-				setCurrent();
-			} else {
-				setPrior();
-				displayText = `You see a plug already in an outlet.`;
-				setCurrent();
+			if (plug == 'unplugged') {				
+				setCurrent(`You see a plug behind the tv that's not in an outlet.`);
+			} else {				
+				setCurrent(`You see a plug already in an outlet.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no tv in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no tv in view.`);
 		}
 	} else if (
 		/*=====================
@@ -328,19 +257,13 @@ function interpretString(userChoice) {
 	) {
 		if (direction == 'north') {
 			if (plug == 'unplugged') {
-				plug = 'plugged';
-				setPrior();
-				displayText = `You plug in the plug.`;
-				setCurrent();
-			} else {
-				setPrior();
-				displayText = `The plug is already plugged in.`;
-				setCurrent();
+				plug = 'plugged';				
+				setCurrent(`You plug in the plug.`);
+			} else {				
+				setCurrent(`The plug is already plugged in.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no plug in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no plug in view.`);
 		}
 	} else if (
 		/*=====================
@@ -351,25 +274,19 @@ function interpretString(userChoice) {
 		if (direction == 'north') {
 			if (plug == 'plugged') {
 				plug = 'unplugged';
-				tvPower = 'off';
-				setPrior();
-				displayText = `You unplugged the tv.`;
+				tvPower = 'off';				
 				if (achievementUnplug == false) {
 					achievementUnplug = true;
 					achievementCount++;
 					$('#achievement-count').text(achievementCount);
 					$('#achievement-unplug').removeClass('hidden');
 				}
-				setCurrent();
-			} else {
-				setPrior();
-				displayText = `The plug is already unplugged.`;
-				setCurrent();
+				setCurrent(`You unplugged the tv.`);
+			} else {				
+				setCurrent(`The plug is already unplugged.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no plug in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no plug in view.`);
 		}
 	} else if (
 		/*=====================
@@ -379,14 +296,10 @@ function interpretString(userChoice) {
 		(userChoice.includes('under') || userChoice.includes('beneath')) &&
 		userChoice.includes('pillow')
 	) {
-		if (direction == 'east') {
-			setPrior();
-			displayText = `You look under the pillow and find nothing. Were you hoping for toothfairy money?`;
-			setCurrent();
-		} else {
-			setPrior();
-			displayText = `There's no pillow in view.`;
-			setCurrent();
+		if (direction == 'east') {			
+			setCurrent(`You look under the pillow and find nothing. Were you hoping for toothfairy money?`);
+		} else {			
+			setCurrent(`There's no pillow in view.`);
 		}
 	} else if (
 		/*=====================
@@ -395,14 +308,10 @@ function interpretString(userChoice) {
 		(userChoice.includes('look') || userChoice.includes('check')) &&
 		userChoice.includes('pillow')
 	) {
-		if (direction == 'east') {
-			setPrior();
-			displayText = `The pillow looks plush. Maybe it's goose-feathered.`;
-			setCurrent();
-		} else {
-			setPrior();
-			displayText = `There's no pillow in view.`;
-			setCurrent();
+		if (direction == 'east') {			
+			setCurrent(`The pillow looks plush. Maybe it's goose-feathered.`);
+		} else {			
+			setCurrent(`There's no pillow in view.`);
 		}
 	} else if (
 		/*=====================
@@ -411,14 +320,10 @@ function interpretString(userChoice) {
 		(userChoice.includes('blanket') || userChoice.includes('sheets')) &&
 		userChoice.includes('look')
 	) {
-		if (direction == 'east') {
-			setPrior();
-			displayText = `Someone took a lot of time making this bed.`;
-			setCurrent();
-		} else {
-			setPrior();
-			displayText = `There's no bed in view.`;
-			setCurrent();
+		if (direction == 'east') {			
+			setCurrent(`Someone took a lot of time making this bed.`);
+		} else {			
+			setCurrent(`There's no bed in view.`);
 		}
 	} else if (
 		/*=====================
@@ -432,9 +337,7 @@ function interpretString(userChoice) {
 		(userChoice.includes('unmake') && userChoice.includes('bed'))
 	) {
 		if (direction == 'east') {
-			bedMade = 'unmade';
-			setPrior();
-			displayText = `Someone somewhere is crying about the unmade bed.`;
+			bedMade = 'unmade';			
 			if (achievementMessupBed == false) {
 				achievementMessupBed = true;
 				achievementCount++;
@@ -442,121 +345,92 @@ function interpretString(userChoice) {
 				$('#achievement-messup-bed').removeClass('hidden');
 			}
 			eastWall = `You are facing east. A bed that used to be perfectly made is now entirely disheveled. `;
-			setCurrent();
-		} else {
-			setPrior();
-			displayText = `There's no bed in view.`;
-			setCurrent();
+			setCurrent(`Someone somewhere is crying about the unmade bed.`);
+		} else {			
+			setCurrent(`There's no bed in view.`);
 		}
 	} else if (
 		/*=====================
             User makes bed 
         ======================*/
-
 		(userChoice.includes('make') || userChoice.includes('fix')) &&
 		userChoice.includes('bed')
 	) {
 		if (direction == 'east') {
-			if (bedMade == 'unmade') {
-				setPrior();
-				displayText = `You try to restore it to its former glory but are unsuccessful.`;
+			if (bedMade == 'unmade') {				
 				if (achievementFixBed == false) {
 					achievementFixBed = true;
 					achievementCount++;
 					$('#achievement-count').text(achievementCount);
 					$('#achievement-fix-bed').removeClass('hidden');
 				}
-				setCurrent();
-			} else {
-				setPrior();
-				displayText = `The bed is already made, and it's perfect. Please don't mess with it.`;
-				setCurrent();
+				setCurrent(`You try to restore it to its former glory but are unsuccessful.`);
+			} else {				
+				setCurrent(`The bed is already made, and it's perfect. Please don't mess with it.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no bed in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no bed in view.`);
 		}
 	} else if (
 		/*=====================
             User jumps on bed 
         ======================*/
-
 		userChoice.includes('jump') &&
 		userChoice.includes('bed')
 	) {
 		if (direction == 'east') {
-			if (monkeys > 0) {
-				setPrior();
-				displayText = `${monkeys} little monkeys jumping on the bed<br>
+			if (monkeys > 0) {				
+				setCurrent(`${monkeys} little monkeys jumping on the bed<br>
                 1 fell off and bumped his head<br>
                 Mama called the doctor,<br>
                 And the doctor said<br>
-                No more monkeys jumping on the bed`;
-				setCurrent();
+                No more monkeys jumping on the bed`);
 				monkeys--;
-			} else {
-				setPrior();
-				displayText = `NO MORE MONKEYS JUMPING ON THE BED!!!`;
+			} else {				
 				if (achievementMonkeys == false) {
 					achievementMonkeys = true;
 					achievementCount++;
 					$('#achievement-count').text(achievementCount);
 					$('#achievement-monkeys').removeClass('hidden');
 				}
-				setCurrent();
+				setCurrent(`NO MORE MONKEYS JUMPING ON THE BED!!!`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no bed in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no bed in view.`);
 		}
 	} else if (
 		/*=====================
             User lies on bed  
         ======================*/
-
 		((userChoice.includes('lay') || userChoice.includes('lie')) && userChoice.includes('bed')) ||
 		userChoice.includes('sleep')
 	) {
-		if (direction == 'east') {
-			setPrior();
-			displayText = `No time to relax!`;
-			setCurrent();
-		} else {
-			setPrior();
-			displayText = `There's no bed in view.`;
-			setCurrent();
+		if (direction == 'east') {			
+			setCurrent(`No time to relax!`);
+		} else {			
+			setCurrent(`There's no bed in view.`);
 		}
 	} else if (
 		/*=====================
             User looks under bed
         ======================*/
-
 		userChoice.includes('under') &&
 		userChoice.includes('bed')
 	) {
 		if (direction == 'east') {
-			if (hasRemote == true) {
-				setPrior();
-				displayText = `There's nothing else under the bed.`;
-				setCurrent();
+			if (hasRemote == true) {				
+				setCurrent(`There's nothing else under the bed.`);
 			} else {
-				hasRemote = true;
-				setPrior();
-				displayText = `You find a remote and pick it up!`;
-				setCurrent();
+				hasRemote = true;				
+				setCurrent(`You find a remote and pick it up!`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no bed in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no bed in view.`);
 		}
 	} else if (
 		/*=====================
             User looks behind poster
         ======================*/
-
 		(userChoice.includes('rip') ||
 			userChoice.includes('remove') ||
 			userChoice.includes('take') ||
@@ -567,45 +441,33 @@ function interpretString(userChoice) {
 		if (direction == 'west') {
 			if (hasKey == false) {
 				hasBox = true;
-				westWall = `You are facing west. A poster used to hang on the wall that said "Don\'t look under the bed!!". Now there's a hole in the wall that's empty.`;
-				setPrior();
-				displayText = `You remove the poster from the wall and find a hole behind it! In the hole is a lockbox. You take the lockbox.`;
-				setCurrent();
-			} else {
-				setPrior();
-				displayText = `No need to further mess with the poster.`;
-				setCurrent();
+				westWall = `You are facing west. A poster used to hang on the wall that said "Don\'t look under the bed!!". Now there's a hole in the wall that's empty.`;				
+				setCurrent(`You remove the poster from the wall and find a hole behind it! In the hole is a lockbox. You take the lockbox.`);
+			} else {				
+				setCurrent(`No need to further mess with the poster.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no poster in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no poster in view.`);
 		}
 	} else if (
 		/*=====================
             User looks at lockbox
         ======================*/
-
 		(userChoice.includes('look') ||
 			userChoice.includes('inspect') ||
 			userChoice.includes('view') ||
 			userChoice.includes('check')) &&
 		(userChoice.includes('lockbox') || userChoice.includes('box'))
 	) {
-		if (hasBox == true) {
-			setPrior();
-			displayText = `There's a 3-digit combination set to 000.`;
-			setCurrent();
-		} else {
-			setPrior();
-			displayText = `There's no lockbox in view.`;
-			setCurrent();
+		if (hasBox == true) {			
+			setCurrent(`There's a 3-digit combination set to 000.`);
+		} else {			
+			setCurrent(`There's no lockbox in view.`);
 		}
 	} else if (
 		/*=====================
             User tries lockbox combo
         ======================*/
-
 		(userChoice.includes('try') ||
 			userChoice.includes('enter') ||
 			userChoice.includes('code') ||
@@ -615,52 +477,38 @@ function interpretString(userChoice) {
 		/\d/.test(userChoice)
 	) {
 		if (userChoice.includes('371')) {
-			hasKey = true;
-			setPrior();
-			displayText = `The box opens up revealing a key. You take the key.`;
-			setCurrent();
-		} else {
-			setPrior();
-			displayText = `That doesn't seem to be the correct combination.`;
-			setCurrent();
+			hasKey = true;			
+			setCurrent(`The box opens up revealing a key. You take the key.`);
+		} else {			
+			setCurrent(`That doesn't seem to be the correct combination.`);
 		}
 	} else if (
 		/*=====================
             User unlocks door 
         ======================*/
-
 		(userChoice.includes('unlock') || userChoice.includes('key')) &&
 		userChoice.includes('door')
 	) {
 		if (direction == 'south') {
 			if (hasKey == true) {
-				door = 'unlocked';
-				setPrior();
-				displayText = `You unlock the door.`;
-				setCurrent();
-			} else {
-				setPrior();
-				displayText = `You need a key to do that.`;
-				setCurrent();
+				door = 'unlocked';				
+				setCurrent(`You unlock the door.`);
+			} else {				
+				setCurrent(`You need a key to do that.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no door in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no door in view.`);
 		}
 	} else if (
 		/*=====================
             User opens door  
         ======================*/
-
 		userChoice.includes('open') &&
 		userChoice.includes('door')
 	) {
 		if (direction == 'south') {
-			if (door == 'unlocked') {
-				setPrior();
-				displayText = `You open the door and escape the room!!! Congrats!`;
-				setCurrent();
+			if (door == 'unlocked') {				
+				setCurrent(`You open the door and escape the room!!! Congrats!`);
 				$('#inputZone').replaceWith(` 
                     <form id="inputZone">
                     </form>
@@ -669,19 +517,14 @@ function interpretString(userChoice) {
                     <form id="inputZone">
                     </form>
                 `);
-			} else {
-				setPrior();
-				displayText = `The door is locked.`;
-				setCurrent();
+			} else {				
+				setCurrent(`The door is locked.`);
 			}
-		} else {
-			setPrior();
-			displayText = `There's no door in view.`;
-			setCurrent();
+		} else {			
+			setCurrent(`There's no door in view.`);
 		}
 	} else {
-		// user inputs something not accounted for
-		setPrior();
+		// user inputs something not accounted for		
 		$('#storyZone').replaceWith(` 
                 <div id="storyZone">
                     <p id="storyText">I don't understand what you want from me. Try inputting something else.</p>
