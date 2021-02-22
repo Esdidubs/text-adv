@@ -3,27 +3,27 @@ html {
 }
 
 body {
-	margin: 0;
 	box-sizing: border-box;
+	margin: 0;	
 }
 
 main {
-	display: flex;
-	flex-direction: column;
 	align-items: center;
+	display: flex;
+	flex-direction: column;	
 }
 
 #storyZone {
-	font-size: 2.5rem;
-	width: 60%;
 	border: 2px solid black;
-	padding: 1rem;
+	font-size: 2.5rem;
 	margin: 2rem 0;
+	padding: 1rem;
+	width: 60%;
 }
 
 #priorZone {
-	width: 60%;
 	text-align: center;
+	width: 60%;	
 }
 
 #inputZone {
@@ -38,19 +38,9 @@ main {
 }
 
 #actionBtn {
+	border-radius: none;
 	height: 5rem;
 	width: 8rem;
-	border-radius: none;
-}
-
-@media (max-width: 768px) {
-	#storyZone {
-		width: 90%;
-	}
-
-	#priorZone {
-		width: 90%;
-	}
 }
 
 .hidden {
@@ -66,7 +56,17 @@ main {
 }
 
 .achievement {
-	font-size: 2.5rem;
 	border: 2px solid black;
+	font-size: 2.5rem;
 	padding: 1.5rem 2.5rem;
+}
+
+@media (max-width: 768px) {
+	#storyZone {
+		width: 90%;
+	}
+
+	#priorZone {
+		width: 90%;
+	}
 }
